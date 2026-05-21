@@ -1,4 +1,4 @@
-const INITIAL_CARDS = [
+const initialCards = [
     {
         name: 'Архыз',
         link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg',
@@ -24,5 +24,3 @@ const INITIAL_CARDS = [
         link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg',
     },
 ];
-
-export { INITIAL_CARDS };
