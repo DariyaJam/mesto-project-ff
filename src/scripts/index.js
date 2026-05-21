@@ -2,7 +2,7 @@
 import '@/pages/index.css';
 import { initialCards } from "@/scripts/cards";
 import { openModal, closeModal, closeModalByOverlay } from "@/scripts/modal";
-import { createCard, deleteCard } from "@/scripts/card";
+import { createCard, deleteCard, likeCard } from "@/scripts/card";
 
 /* Темплейт карточки */
 export const cardTemplate = document.querySelector('#card-template').content;
@@ -24,12 +24,28 @@ const createCardForm = document.forms['new-place'];
 
 const openCardImagePopup = document.querySelector('.popup_type_image');
 
+const imageLink = openCardImagePopup.querySelector('.popup__image');
+const imageCaption = openCardImagePopup.querySelector('.popup__caption');
+
 const closePopupButtons = document.querySelectorAll('.popup__close');
 
 const editAvatarForm = document.forms['edit-avatar'];
 
+/* Действия с попапом открытия картинки */
+
+const handleOpenCardImagePopup = (event) => {
+    imageLink.src = event.target.src;
+    imageLink.alt = event.target.alt;
+    imageCaption.textContent = event.target.alt;
+
+    openModal(openCardImagePopup);
+    openCardImagePopup.addEventListener('click', closeModalByOverlay);
+}
+
+/* Создание карточек из массива данных */
+
 initialCards.forEach((card) => {
-    cardList.append(createCard(card, deleteCard));
+    cardList.append(createCard(card, deleteCard, likeCard, handleOpenCardImagePopup));
 });
 
 /* Действия с попапом профиля */
@@ -51,6 +67,8 @@ function handleProfileEditFormSubmit(event) {
 
     userName.textContent = profileEditForm.name.value;
     userDescription.textContent = profileEditForm.description.value;
+
+    closeModal(profileEditPopup);
 }
 
 profileEditForm.addEventListener('submit', handleProfileEditFormSubmit);
@@ -74,7 +92,7 @@ function handleCreateCardFormSubmit(event) {
         link: createCardForm.link.value,
     }
 
-    cardList.append(createCard(cardData, deleteCard));
+    cardList.append(createCard(cardData, deleteCard, likeCard, handleOpenCardImagePopup));
 
     closeModal(createCardPopup);
 
@@ -84,9 +102,7 @@ function handleCreateCardFormSubmit(event) {
 
 createCardForm.addEventListener('submit', handleCreateCardFormSubmit);
 
-const handleImagePopupOpen = () => {
-
-};
+/* Функция для закрытия всех попапов */
 
 const handleClosePopup = () => {
     closeModal(document.querySelector('.popup_is-opened'));
