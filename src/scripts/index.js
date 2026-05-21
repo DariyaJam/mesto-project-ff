@@ -1,33 +1,29 @@
 import '@/pages/index.css';
 import { initialCards } from "@/scripts/cards";
+import { openModal } from "@/scripts/modal";
+import { createCard, deleteCard } from "@/scripts/card";
 
-const cardTemplate = document.querySelector('#card-template').content;
+export const cardTemplate = document.querySelector('#card-template').content;
 
 const cardList = document.querySelector('.places__list');
+const profileEditButton = document.querySelector('.profile__edit-button');
+const addCardButton = document.querySelector('.profile__add-button');
 
-const createCard = (cardData, deleteCard) => {
-
-    const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-
-    const cardTitle = cardElement.querySelector('.card__title');
-    const cardImage = cardElement.querySelector('.card__image');
-
-    cardTitle.textContent = cardData.name;
-    cardImage.src = cardData.link;
-    cardImage.alt = cardData.name;
-
-    const cardDeleteButton = cardElement.querySelector('.card__delete-button');
-
-    cardDeleteButton.addEventListener('click', deleteCard);
-
-    return cardElement;
-
-};
-
-const deleteCard = (event) => {
-    event.target.closest('.card').remove();
-};
+const profileEditPopup = document.querySelector('.popup_type_edit');
+const createCardPopup = document.querySelector('.popup_type_new-card');
 
 initialCards.forEach((card) => {
     cardList.append(createCard(card, deleteCard));
 });
+
+const handleProfileEditPopupOpen = () => {
+    openModal(profileEditPopup);
+}
+
+const handleCreateCardPopupOpen = () => {
+    openModal(createCardPopup);
+}
+
+profileEditButton.addEventListener('click', handleProfileEditPopupOpen);
+addCardButton.addEventListener('click', handleCreateCardPopupOpen);
+
