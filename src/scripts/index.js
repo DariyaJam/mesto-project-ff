@@ -1,10 +1,13 @@
+/* Импорт файлов и модулей */
 import '@/pages/index.css';
 import { initialCards } from "@/scripts/cards";
 import { openModal, closeModal, closeModalByOverlay } from "@/scripts/modal";
 import { createCard, deleteCard } from "@/scripts/card";
 
+/* Темплейт карточки */
 export const cardTemplate = document.querySelector('#card-template').content;
 
+/* DOM-узлы */
 const cardList = document.querySelector('.places__list');
 
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -29,6 +32,8 @@ initialCards.forEach((card) => {
     cardList.append(createCard(card, deleteCard));
 });
 
+/* Действия с попапом профиля */
+
 const handleProfileEditPopupOpen = () => {
     profileEditForm.name.value = userName.textContent;
     profileEditForm.description.value = userDescription.textContent;
@@ -36,6 +41,10 @@ const handleProfileEditPopupOpen = () => {
     openModal(profileEditPopup);
     profileEditPopup.addEventListener('click', closeModalByOverlay);
 };
+
+profileEditButton.addEventListener('click', handleProfileEditPopupOpen);
+
+/* Действия с формой профиля */
 
 function handleProfileEditFormSubmit(event) {
     event.preventDefault();
@@ -46,10 +55,34 @@ function handleProfileEditFormSubmit(event) {
 
 profileEditForm.addEventListener('submit', handleProfileEditFormSubmit);
 
+/* Действия с попапом создания карточки */
+
 const handleCreateCardPopupOpen = () => {
     openModal(createCardPopup);
     createCardPopup.addEventListener('click', closeModalByOverlay);
 };
+
+createCardButton.addEventListener('click', handleCreateCardPopupOpen);
+
+/* Действия с формой создания карточки */
+
+function handleCreateCardFormSubmit(event) {
+    event.preventDefault();
+
+    let cardData = {
+        name: createCardForm['place-name'].value,
+        link: createCardForm.link.value,
+    }
+
+    cardList.append(createCard(cardData, deleteCard));
+
+    closeModal(createCardPopup);
+
+    createCardForm['place-name'].value = '';
+    createCardForm.link.value = '';
+}
+
+createCardForm.addEventListener('submit', handleCreateCardFormSubmit);
 
 const handleImagePopupOpen = () => {
 
@@ -62,7 +95,3 @@ const handleClosePopup = () => {
 closePopupButtons.forEach(button => {
     button.addEventListener('click', handleClosePopup);
 });
-
-profileEditButton.addEventListener('click', handleProfileEditPopupOpen);
-createCardButton.addEventListener('click', handleCreateCardPopupOpen);
-
