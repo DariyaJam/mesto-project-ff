@@ -1,8 +1,9 @@
 /* Импорт файлов и модулей */
 import '@/pages/index.css';
-import { initialCards } from "@/scripts/cards";
-import { openModal, closeModal, closeModalByOverlay } from "@/scripts/modal";
-import { createCard, deleteCard, likeCard } from "@/scripts/card";
+import {initialCards} from "@/scripts/cards";
+import {openModal, closeModal, closeModalByOverlay} from "@/scripts/modal";
+import {createCard, deleteCard, likeCard} from "@/scripts/card";
+import {enableValidation, clearValidation} from "@/scripts/validation";
 
 /* Темплейт карточки */
 export const cardTemplate = document.querySelector('#card-template').content;
@@ -31,6 +32,17 @@ const closePopupButtons = document.querySelectorAll('.popup__close');
 
 const editAvatarForm = document.forms['edit-avatar'];
 
+/* Объект с настройками валидаци */
+
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+};
+
 /* Действия с попапом открытия картинки */
 
 const handleOpenCardImagePopup = (event) => {
@@ -54,6 +66,8 @@ const handleProfileEditPopupOpen = () => {
     profileEditForm.name.value = userName.textContent;
     profileEditForm.description.value = userDescription.textContent;
 
+    clearValidation(profileEditForm, validationConfig);
+
     openModal(profileEditPopup);
     profileEditPopup.addEventListener('click', closeModalByOverlay);
 };
@@ -76,6 +90,8 @@ profileEditForm.addEventListener('submit', handleProfileEditFormSubmit);
 /* Действия с попапом создания карточки */
 
 const handleCreateCardPopupOpen = () => {
+    clearValidation(createCardForm, validationConfig);
+
     openModal(createCardPopup);
     createCardPopup.addEventListener('click', closeModalByOverlay);
 };
@@ -111,3 +127,5 @@ const handleClosePopup = () => {
 closePopupButtons.forEach(button => {
     button.addEventListener('click', handleClosePopup);
 });
+
+enableValidation(validationConfig);
