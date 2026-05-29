@@ -38,7 +38,7 @@ const setProfileAvatarApi = (profileInfo) => {
         method: 'PATCH',
         headers: config.headers,
         body: JSON.stringify({
-           avatar: profileInfo.avatar,
+            avatar: profileInfo.avatar,
         }),
     }).then(getResponseData);
 };
@@ -54,4 +54,11 @@ const createCardApi = (cardInfo) => {
     }).then(getResponseData);
 };
 
-export { getProfileInfo, getCardList, setProfileInfoApi, createCardApi, setProfileAvatarApi };
+const deleteCardApi = (cardId) => {
+    return fetch(`${config.baseURL}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers,
+    }).then(getResponseData);
+};
+
+export {getProfileInfo, getCardList, setProfileInfoApi, createCardApi, setProfileAvatarApi, deleteCardApi};

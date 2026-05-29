@@ -1,6 +1,6 @@
 import { cardTemplate } from "@/scripts/index";
 
-const createCard = (cardData, deleteCard, likeCard, handleOpenCardImagePopup) => {
+const createCard = (cardData, currentUserID, likeCard, handleOpenCardImagePopup, handleCardDelete) => {
 
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
 
@@ -14,7 +14,11 @@ const createCard = (cardData, deleteCard, likeCard, handleOpenCardImagePopup) =>
     cardImage.alt = cardData.name;
 
     const cardDeleteButton = cardElement.querySelector('.card__delete-button');
-    cardDeleteButton.addEventListener('click', deleteCard);
+
+    if (cardData.owner['_id'] === currentUserID) {
+        cardDeleteButton.classList.add('card__delete-button_is-active');
+        cardDeleteButton.addEventListener('click', () => handleCardDelete(cardData['_id'], cardDeleteButton));
+    }
 
     const cardLikeButton = cardElement.querySelector('.card__like-button');
     cardLikeButton.addEventListener('click', likeCard);
@@ -23,12 +27,8 @@ const createCard = (cardData, deleteCard, likeCard, handleOpenCardImagePopup) =>
 
 };
 
-const deleteCard = (event) => {
-    event.target.closest('.card').remove();
-};
-
 const likeCard = (event) => {
     event.target.classList.toggle('card__like-button_is-active');
 }
 
-export { createCard, deleteCard, likeCard };
+export { createCard, likeCard };

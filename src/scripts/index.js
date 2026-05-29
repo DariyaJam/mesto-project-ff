@@ -1,12 +1,10 @@
 /* Импорт файлов и модулей */
 
 import '@/pages/index.css';
-import {initialCards} from "@/scripts/cards";
 import {openModal, closeModal, closeModalByOverlay} from "@/scripts/modal";
-import {createCard, deleteCard, likeCard} from "@/scripts/card";
+import {createCard, likeCard} from "@/scripts/card";
 import {enableValidation, clearValidation} from "@/scripts/validation";
 import * as API from "@/scripts/api";
-import {getProfileInfo} from "@/scripts/api";
 
 /* Темплейт карточки */
 
@@ -159,7 +157,7 @@ function handleCreateCardFormSubmit(event) {
 
     API.createCardApi(cardInfo)
         .then((cardInfo) => {
-            cardList.prepend(createCard(cardInfo, deleteCard, likeCard, handleOpenCardImagePopup));
+            cardList.prepend(createCard(cardInfo, cardInfo.owner['_id'], likeCard, handleOpenCardImagePopup, handleCardDelete));
         }).catch((err) => {
             console.error(err);
         });
@@ -180,15 +178,24 @@ closePopupButtons.forEach(button => {
     button.addEventListener('click', handleClosePopup);
 });
 
+const handleCardDelete = (cardID, buttonElement) => {
+    API.deleteCardApi(cardID)
+        .then(() => {
+            buttonElement.closest('.card').remove();
+        });
+};
+
 enableValidation(validationConfig);
 
 Promise.all([API.getProfileInfo(), API.getCardList()])
     .then(([profileInfo, cardsData]) => {
 
+        const currentUserID = profileInfo['_id'];
+
         setProfileInfo(profileInfo);
         setProfileAvatar(profileInfo);
 
         cardsData.forEach((card) => {
-            cardList.append(createCard(card, deleteCard, likeCard, handleOpenCardImagePopup));
+            cardList.append(createCard(card, currentUserID, likeCard, handleOpenCardImagePopup, handleCardDelete));
         });
     });
