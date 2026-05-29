@@ -20,9 +20,9 @@ const profileEditButton = document.querySelector('.profile__edit-button');
 const profileEditPopup = document.querySelector('.popup_type_edit');
 const profileEditForm = document.forms['edit-profile'];
 
-const userData = document.querySelector('.profile__info');
-const userName = userData.querySelector('.profile__title');
-const userDescription = userData.querySelector('.profile__description');
+const profileData = document.querySelector('.profile__info');
+const profileName = profileData.querySelector('.profile__title');
+const profileDescription = profileData.querySelector('.profile__description');
 
 const createCardButton = document.querySelector('.profile__add-button');
 const createCardPopup = document.querySelector('.popup_type_new-card');
@@ -51,8 +51,8 @@ const validationConfig = {
 /* Загрузка информации о пользователе с сервера */
 
 const setProfileInfo = (profileInfo) => {
-    userName.textContent = profileInfo.name;
-    userDescription.textContent = profileInfo.about;
+    profileName.textContent = profileInfo.name;
+    profileDescription.textContent = profileInfo.about;
 };
 
 /* Действия с попапом открытия картинки */
@@ -66,17 +66,11 @@ const handleOpenCardImagePopup = (event) => {
     openCardImagePopup.addEventListener('click', closeModalByOverlay);
 }
 
-/* Создание карточек из массива данных */
-
-initialCards.forEach((card) => {
-    cardList.append(createCard(card, deleteCard, likeCard, handleOpenCardImagePopup));
-});
-
 /* Действия с попапом профиля */
 
 const handleProfileEditPopupOpen = () => {
-    profileEditForm.name.value = userName.textContent;
-    profileEditForm.description.value = userDescription.textContent;
+    profileEditForm.name.value = profileName.textContent;
+    profileEditForm.description.value = profileDescription.textContent;
 
     clearValidation(profileEditForm, validationConfig);
 
@@ -91,8 +85,15 @@ profileEditButton.addEventListener('click', handleProfileEditPopupOpen);
 function handleProfileEditFormSubmit(event) {
     event.preventDefault();
 
-    userName.textContent = profileEditForm.name.value;
-    userDescription.textContent = profileEditForm.description.value;
+    const profileInfo = {
+        name: profileEditForm.name.value,
+        about: profileEditForm.description.value,
+    };
+
+    API.setProfileInfoApi(profileInfo)
+        .then((profileInfo) => {
+            setProfileInfo(profileInfo);
+    });
 
     closeModal(profileEditPopup);
 }
@@ -115,17 +116,20 @@ createCardButton.addEventListener('click', handleCreateCardPopupOpen);
 function handleCreateCardFormSubmit(event) {
     event.preventDefault();
 
-    let cardData = {
+    const cardInfo = {
         name: createCardForm['place-name'].value,
         link: createCardForm.link.value,
-    }
+    };
 
-    cardList.append(createCard(cardData, deleteCard, likeCard, handleOpenCardImagePopup));
+    API.createCardApi(cardInfo)
+        .then((cardInfo) => {
+            cardList.prepend(createCard(cardInfo, deleteCard, likeCard, handleOpenCardImagePopup));
+        }).catch((err) => {
+            console.error(err);
+        });
 
     closeModal(createCardPopup);
-
-    createCardForm['place-name'].value = '';
-    createCardForm.link.value = '';
+    createCardForm.reset();
 }
 
 createCardForm.addEventListener('submit', handleCreateCardFormSubmit);

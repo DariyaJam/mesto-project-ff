@@ -22,4 +22,26 @@ const getCardList = () => {
     }).then(getResponseData);
 };
 
-export { getProfileInfo, getCardList };
+const setProfileInfoApi = (profileInfo) => {
+    return fetch(`${config.baseURL}/users/me`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+            name: profileInfo.name,
+            about: profileInfo.about,
+        }),
+    }).then(getResponseData);
+};
+
+const createCardApi = (cardInfo) => {
+    return fetch(`${config.baseURL}/cards`, {
+        method: 'POST',
+        headers: config.headers,
+        body: JSON.stringify({
+            name: cardInfo.name,
+            link: cardInfo.link,
+        }),
+    }).then(getResponseData);
+};
+
+export { getProfileInfo, getCardList, setProfileInfoApi, createCardApi };
