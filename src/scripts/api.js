@@ -16,4 +16,10 @@ const getProfileInfo = () => {
     }).then(getResponseData);
 };
 
-export {getProfileInfo}
+const getCardList = () => {
+    return fetch(`${config.baseURL}/cards`, {
+        headers: config.headers,
+    }).then(getResponseData);
+};
+
+export { getProfileInfo, getCardList };

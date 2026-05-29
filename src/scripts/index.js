@@ -1,4 +1,5 @@
 /* Импорт файлов и модулей */
+
 import '@/pages/index.css';
 import {initialCards} from "@/scripts/cards";
 import {openModal, closeModal, closeModalByOverlay} from "@/scripts/modal";
@@ -8,9 +9,11 @@ import * as API from "@/scripts/api";
 import {getProfileInfo} from "@/scripts/api";
 
 /* Темплейт карточки */
+
 export const cardTemplate = document.querySelector('#card-template').content;
 
 /* DOM-узлы */
+
 const cardList = document.querySelector('.places__list');
 
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -139,7 +142,12 @@ closePopupButtons.forEach(button => {
 
 enableValidation(validationConfig);
 
-Promise.all([API.getProfileInfo()])
-    .then(([profileInfo]) => {
+Promise.all([API.getProfileInfo(), API.getCardList()])
+    .then(([profileInfo, cardsData]) => {
+
         setProfileInfo(profileInfo);
-    })
+
+        cardsData.forEach((card) => {
+            cardList.append(createCard(card, deleteCard, likeCard, handleOpenCardImagePopup));
+        });
+    });
