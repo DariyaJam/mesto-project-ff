@@ -35,6 +35,8 @@ const imageCaption = openCardImagePopup.querySelector('.popup__caption');
 
 const closePopupButtons = document.querySelectorAll('.popup__close');
 
+const editAvatarButton = document.querySelector('.profile__image');
+const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
 const editAvatarForm = document.forms['edit-avatar'];
 
 /* Объект с настройками валидаци */
@@ -53,6 +55,10 @@ const validationConfig = {
 const setProfileInfo = (profileInfo) => {
     profileName.textContent = profileInfo.name;
     profileDescription.textContent = profileInfo.about;
+};
+
+const setProfileAvatar = (profileInfo) => {
+    editAvatarButton.style.backgroundImage = `url(${profileInfo.avatar})`;
 };
 
 /* Действия с попапом открытия картинки */
@@ -99,6 +105,36 @@ function handleProfileEditFormSubmit(event) {
 }
 
 profileEditForm.addEventListener('submit', handleProfileEditFormSubmit);
+
+/* Действия с попапом смены автара */
+
+const handleEditAvatarPopupOpen = () => {
+    clearValidation(editAvatarForm, validationConfig);
+
+    openModal(editAvatarPopup);
+    editAvatarPopup.addEventListener('click', closeModalByOverlay);
+};
+
+editAvatarButton.addEventListener('click', handleEditAvatarPopupOpen);
+
+/* Действия с формой смены аватара */
+
+function handleEditAvatarFormSubmit(event) {
+    event.preventDefault();
+
+    const profileInfo = {
+        avatar: editAvatarForm.avatar.value,
+    };
+
+    API.setProfileAvatarApi(profileInfo)
+        .then((profileInfo) => {
+            setProfileAvatar(profileInfo);
+        });
+
+    closeModal(editAvatarPopup);
+}
+
+editAvatarForm.addEventListener('submit', handleEditAvatarFormSubmit);
 
 /* Действия с попапом создания карточки */
 
@@ -150,6 +186,7 @@ Promise.all([API.getProfileInfo(), API.getCardList()])
     .then(([profileInfo, cardsData]) => {
 
         setProfileInfo(profileInfo);
+        setProfileAvatar(profileInfo);
 
         cardsData.forEach((card) => {
             cardList.append(createCard(card, deleteCard, likeCard, handleOpenCardImagePopup));

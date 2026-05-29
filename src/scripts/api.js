@@ -33,6 +33,16 @@ const setProfileInfoApi = (profileInfo) => {
     }).then(getResponseData);
 };
 
+const setProfileAvatarApi = (profileInfo) => {
+    return fetch(`${config.baseURL}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+           avatar: profileInfo.avatar,
+        }),
+    }).then(getResponseData);
+};
+
 const createCardApi = (cardInfo) => {
     return fetch(`${config.baseURL}/cards`, {
         method: 'POST',
@@ -44,4 +54,4 @@ const createCardApi = (cardInfo) => {
     }).then(getResponseData);
 };
 
-export { getProfileInfo, getCardList, setProfileInfoApi, createCardApi };
+export { getProfileInfo, getCardList, setProfileInfoApi, createCardApi, setProfileAvatarApi };
