@@ -4,6 +4,8 @@ import {initialCards} from "@/scripts/cards";
 import {openModal, closeModal, closeModalByOverlay} from "@/scripts/modal";
 import {createCard, deleteCard, likeCard} from "@/scripts/card";
 import {enableValidation, clearValidation} from "@/scripts/validation";
+import * as API from "@/scripts/api";
+import {getProfileInfo} from "@/scripts/api";
 
 /* Темплейт карточки */
 export const cardTemplate = document.querySelector('#card-template').content;
@@ -41,6 +43,13 @@ const validationConfig = {
     inactiveButtonClass: 'popup__button_disabled',
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__error_visible'
+};
+
+/* Загрузка информации о пользователе с сервера */
+
+const setProfileInfo = (profileInfo) => {
+    userName.textContent = profileInfo.name;
+    userDescription.textContent = profileInfo.about;
 };
 
 /* Действия с попапом открытия картинки */
@@ -129,3 +138,8 @@ closePopupButtons.forEach(button => {
 });
 
 enableValidation(validationConfig);
+
+Promise.all([API.getProfileInfo()])
+    .then(([profileInfo]) => {
+        setProfileInfo(profileInfo);
+    })
