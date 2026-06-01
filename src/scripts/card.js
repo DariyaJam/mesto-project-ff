@@ -1,6 +1,6 @@
-import { cardTemplate } from "@/scripts/index";
+import {cardTemplate} from "@/scripts/index";
 
-const createCard = (cardData, currentUserID, likeCard, handleOpenCardImagePopup, handleCardDelete) => {
+const createCard = (cardData, currentUserID, handleCardLike, handleOpenCardImagePopup, handleCardDelete) => {
 
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
 
@@ -13,6 +13,11 @@ const createCard = (cardData, currentUserID, likeCard, handleOpenCardImagePopup,
     cardImage.src = cardData.link;
     cardImage.alt = cardData.name;
 
+    const counter = cardElement.querySelector('.card__like-counter');
+
+    counter.classList.add('card__like-counter_is-active');
+    counter.textContent = cardData.likes.length;
+
     const cardDeleteButton = cardElement.querySelector('.card__delete-button');
 
     if (cardData.owner['_id'] === currentUserID) {
@@ -21,14 +26,15 @@ const createCard = (cardData, currentUserID, likeCard, handleOpenCardImagePopup,
     }
 
     const cardLikeButton = cardElement.querySelector('.card__like-button');
-    cardLikeButton.addEventListener('click', likeCard);
+
+    if (cardData.likes.find((cardElement) => cardElement['_id'] === currentUserID)) {
+        cardLikeButton.classList.add('card__like-button_is-active');
+    }
+
+    cardLikeButton.addEventListener('click', () => handleCardLike(cardData['_id'], currentUserID, cardLikeButton, counter));
 
     return cardElement;
 
 };
 
-const likeCard = (event) => {
-    event.target.classList.toggle('card__like-button_is-active');
-}
-
-export { createCard, likeCard };
+export {createCard};

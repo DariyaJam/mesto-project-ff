@@ -54,11 +54,42 @@ const createCardApi = (cardInfo) => {
     }).then(getResponseData);
 };
 
-const deleteCardApi = (cardId) => {
-    return fetch(`${config.baseURL}/cards/${cardId}`, {
+const deleteCardApi = (cardID) => {
+    return fetch(`${config.baseURL}/cards/${cardID}`, {
         method: 'DELETE',
         headers: config.headers,
     }).then(getResponseData);
 };
 
-export {getProfileInfo, getCardList, setProfileInfoApi, createCardApi, setProfileAvatarApi, deleteCardApi};
+const getCardApi = (cardID) => {
+    return getCardList()
+        .then((res) => {
+            return Array.from(res).find(element => element['_id'] === cardID);
+        });
+};
+
+const likeCardApi = (cardID) => {
+    return fetch(`${config.baseURL}/cards/likes/${cardID}`, {
+        method: "PUT",
+        headers: config.headers,
+    }).then(getResponseData);
+};
+
+const unlikeCardApi = (cardID) => {
+    return fetch(`${config.baseURL}/cards/likes/${cardID}`, {
+        method: "DELETE",
+        headers: config.headers,
+    }).then(getResponseData);
+};
+
+export {
+    getProfileInfo,
+    getCardList,
+    setProfileInfoApi,
+    createCardApi,
+    setProfileAvatarApi,
+    deleteCardApi,
+    getCardApi,
+    likeCardApi,
+    unlikeCardApi
+};

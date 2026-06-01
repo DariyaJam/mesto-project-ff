@@ -2,7 +2,7 @@
 
 import '@/pages/index.css';
 import {openModal, closeModal, closeModalByOverlay} from "@/scripts/modal";
-import {createCard, likeCard} from "@/scripts/card";
+import {createCard} from "@/scripts/card";
 import {enableValidation, clearValidation} from "@/scripts/validation";
 import * as API from "@/scripts/api";
 
@@ -97,7 +97,7 @@ function handleProfileEditFormSubmit(event) {
     API.setProfileInfoApi(profileInfo)
         .then((profileInfo) => {
             setProfileInfo(profileInfo);
-    });
+        });
 
     closeModal(profileEditPopup);
 }
@@ -157,10 +157,10 @@ function handleCreateCardFormSubmit(event) {
 
     API.createCardApi(cardInfo)
         .then((cardInfo) => {
-            cardList.prepend(createCard(cardInfo, cardInfo.owner['_id'], likeCard, handleOpenCardImagePopup, handleCardDelete));
+            cardList.prepend(createCard(cardInfo, cardInfo.owner['_id'], handleCardLike, handleOpenCardImagePopup, handleCardDelete));
         }).catch((err) => {
-            console.error(err);
-        });
+        console.error(err);
+    });
 
     closeModal(createCardPopup);
     createCardForm.reset();
@@ -178,11 +178,45 @@ closePopupButtons.forEach(button => {
     button.addEventListener('click', handleClosePopup);
 });
 
+/* Функция для удаления карточки */
+
 const handleCardDelete = (cardID, buttonElement) => {
     API.deleteCardApi(cardID)
         .then(() => {
             buttonElement.closest('.card').remove();
         });
+};
+
+/* Функция для лайка карточки */
+
+const handleCardLike = async (cardID, currentUserID, buttonElement, counterElement) => {
+
+    const cardData = await API.getCardApi(cardID);
+    let liked;
+
+    if (cardData.likes) {
+        const likesCount = cardData?.likes?.length || 0;
+
+        liked = likesCount && cardData.likes.find((cardLike) => {
+            return cardLike['_id'] === currentUserID;
+        });
+    }
+
+    if (liked) {
+        API.unlikeCardApi(cardID)
+            .then((res) => {
+                buttonElement.classList.remove('card__like-button_is-active');
+                counterElement.classList.add('card__like-counter_is-active');
+                counterElement.textContent = res.likes.length;
+            });
+    } else {
+        API.likeCardApi(cardID)
+            .then((res) => {
+                buttonElement.classList.add('card__like-button_is-active');
+                counterElement.classList.add('card__like-counter_is-active');
+                counterElement.textContent = res.likes.length;
+            });
+    }
 };
 
 enableValidation(validationConfig);
@@ -196,6 +230,6 @@ Promise.all([API.getProfileInfo(), API.getCardList()])
         setProfileAvatar(profileInfo);
 
         cardsData.forEach((card) => {
-            cardList.append(createCard(card, currentUserID, likeCard, handleOpenCardImagePopup, handleCardDelete));
+            cardList.append(createCard(card, currentUserID, handleCardLike, handleOpenCardImagePopup, handleCardDelete));
         });
     });
