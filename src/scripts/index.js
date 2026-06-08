@@ -37,6 +37,9 @@ const editAvatarButton = document.querySelector('.profile__image');
 const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
 const editAvatarForm = document.forms['edit-avatar'];
 
+const confirmButton = document.querySelector('.popup__button_confirm');
+const confirmPopup = document.querySelector('.popup_type_confirm');
+
 /* Объект с настройками валидаци */
 
 const validationConfig = {
@@ -97,6 +100,9 @@ function handleProfileEditFormSubmit(event) {
     API.setProfileInfoApi(profileInfo)
         .then((profileInfo) => {
             setProfileInfo(profileInfo);
+        })
+        .catch((error) => {
+            console.log(error);
         });
 
     closeModal(profileEditPopup);
@@ -127,6 +133,9 @@ function handleEditAvatarFormSubmit(event) {
     API.setProfileAvatarApi(profileInfo)
         .then((profileInfo) => {
             setProfileAvatar(profileInfo);
+        })
+        .catch((error) => {
+            console.log(error);
         });
 
     closeModal(editAvatarPopup);
@@ -158,9 +167,10 @@ function handleCreateCardFormSubmit(event) {
     API.createCardApi(cardInfo)
         .then((cardInfo) => {
             cardList.prepend(createCard(cardInfo, cardInfo.owner['_id'], handleCardLike, handleOpenCardImagePopup, handleCardDelete));
-        }).catch((err) => {
-        console.error(err);
-    });
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 
     closeModal(createCardPopup);
     createCardForm.reset();
@@ -181,10 +191,19 @@ closePopupButtons.forEach(button => {
 /* Функция для удаления карточки */
 
 const handleCardDelete = (cardID, buttonElement) => {
-    API.deleteCardApi(cardID)
-        .then(() => {
-            buttonElement.closest('.card').remove();
-        });
+    openModal(confirmPopup);
+    confirmPopup.addEventListener('click', closeModalByOverlay);
+
+    confirmButton.onclick = () => {
+        API.deleteCardApi(cardID)
+            .then(() => {
+                buttonElement.closest('.card').remove();
+                closeModal(confirmPopup);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 };
 
 /* Функция для лайка карточки */
@@ -208,6 +227,9 @@ const handleCardLike = async (cardID, currentUserID, buttonElement, counterEleme
                 buttonElement.classList.remove('card__like-button_is-active');
                 counterElement.classList.add('card__like-counter_is-active');
                 counterElement.textContent = res.likes.length;
+            })
+            .catch((error) => {
+                console.log(error);
             });
     } else {
         API.likeCardApi(cardID)
@@ -215,6 +237,9 @@ const handleCardLike = async (cardID, currentUserID, buttonElement, counterEleme
                 buttonElement.classList.add('card__like-button_is-active');
                 counterElement.classList.add('card__like-counter_is-active');
                 counterElement.textContent = res.likes.length;
+            })
+            .catch((error) => {
+                console.log(error);
             });
     }
 };
@@ -232,4 +257,7 @@ Promise.all([API.getProfileInfo(), API.getCardList()])
         cardsData.forEach((card) => {
             cardList.append(createCard(card, currentUserID, handleCardLike, handleOpenCardImagePopup, handleCardDelete));
         });
+    })
+    .catch((error) => {
+        console.log(error);
     });
