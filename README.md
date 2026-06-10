@@ -1,5 +1,7 @@
 # Проектная работа "Mesto"
 Стек: HTML, CSS, JavaScript, Webpack
+  
+Проект опубликованный на gh-pages: https://dariyajam.github.io/mesto-project-ff/
 ## Установка и запуск
 Для установки проекта необходимо выполнить
 ```terminal
